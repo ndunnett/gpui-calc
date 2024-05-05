@@ -1,0 +1,17 @@
+[package]
+name = "gpui-calc"
+description = "GPUI Calculator"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gpui = { git = "https://github.com/zed-industries/zed" }
+
+[[bin]]
+name = "gpui-calc"
+path = "src/main.rs"
+
+[package.metadata.bundle]
+name = "GPUI Calculator"
+identifier = "com.ndunnett.gpuicalc"
+osx_minimum_system_version = "10.15.7"
