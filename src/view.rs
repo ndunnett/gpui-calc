@@ -18,6 +18,45 @@ fn button(label: String, theme: &Theme) -> Div {
 }
 
 #[derive(Clone, Copy)]
+struct Titlebar;
+
+impl Titlebar {
+    fn build(cx: &mut WindowContext) -> View<Self> {
+        cx.new_view(|_cx| Self)
+    }
+
+    fn windows_button<F>(label: String, hover_color: F) -> Div
+    where
+        F: Into<Fill>,
+    {
+        div()
+            .w(rems(2.25))
+            .h(rems(1.9))
+            .flex()
+            .items_center()
+            .justify_center()
+            .child(label)
+            .hover(|this| this.bg(hover_color))
+    }
+}
+
+impl Render for Titlebar {
+    fn render(&mut self, _cx: &mut ViewContext<Self>) -> impl IntoElement {
+        if cfg!(target_os = "windows") {
+            div()
+                .flex()
+                .flex_row()
+                .justify_end()
+                .child(Self::windows_button("_".into(), rgba(0xaaaaaa33)))
+                .child(Self::windows_button("□".into(), rgba(0xaaaaaa33)))
+                .child(Self::windows_button("×".into(), rgba(0xcc2222ff)))
+        } else {
+            div().h(rems(1.))
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
 struct Display;
 
 impl Display {
@@ -41,13 +80,13 @@ impl Render for Display {
         let h_to_fit = 1.82 * w / value.len() as f32;
 
         div()
-            .w(w)
             .flex()
             .justify_end()
             .font_weight(FontWeight::THIN)
             .line_height(rems(3.75))
             .text_size(rems(3.).to_pixels(rs).min(h_to_fit))
             .child(value)
+            .neg_pt_2p5()
     }
 }
 
@@ -228,6 +267,7 @@ impl Render for Keypad {
 }
 
 pub struct Root {
+    titlebar: View<Titlebar>,
     display: View<Display>,
     keypad: View<Keypad>,
 }
@@ -239,9 +279,14 @@ impl Root {
             true
         });
 
+        let titlebar = Titlebar::build(cx);
         let display = Display::build(cx);
         let keypad = Keypad::build(cx);
-        cx.new_view(|_cx| Root { display, keypad })
+        cx.new_view(|_cx| Root {
+            titlebar,
+            display,
+            keypad,
+        })
     }
 }
 
@@ -252,14 +297,15 @@ impl Render for Root {
         div()
             .size_full()
             .flex()
+            .flex_col()
             .bg(theme.colors.bg_window)
             .text_color(theme.colors.text)
+            .child(self.titlebar.clone())
             .child(
                 div()
                     .flex()
                     .flex_col()
                     .flex_grow()
-                    .mt_4()
                     .p_2()
                     .child(self.display.clone())
                     .child(self.keypad.clone()),
