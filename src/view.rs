@@ -267,7 +267,7 @@ impl Render for Root {
             .flex_col()
             .bg(theme.colors.bg_window)
             .text_color(theme.colors.text)
-            .font_family(theme.fonts.main_family.to_string())
+            .font_family(theme.fonts.family.to_string())
             .child(self.titlebar.clone())
             .child(self.display.clone())
             .child(self.keypad.clone())

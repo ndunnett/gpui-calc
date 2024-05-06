@@ -21,13 +21,13 @@ impl Default for Colors {
 }
 
 pub struct Fonts {
-    pub main_family: String,
+    pub family: String,
 }
 
 impl Default for Fonts {
     fn default() -> Self {
         Self {
-            main_family: "zed-sans".into(),
+            family: "Zed Sans".into(),
         }
     }
 }
