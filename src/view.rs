@@ -1,5 +1,6 @@
 use gpui::*;
 
+use crate::icon::{Icon, IconName};
 use crate::state::{Operator, State};
 use crate::theme::Theme;
 
@@ -11,33 +12,42 @@ impl Titlebar {
         cx.new_view(|_cx| Self)
     }
 
-    fn windows_button<F>(label: String, hover_color: F) -> Div
-    where
-        F: Into<Fill>,
-    {
+    fn windows_button(label: String, hover_color: Rgba) -> Div {
         div()
-            .w(rems(2.25))
-            .h(rems(1.9))
+            .w(px(36.))
+            .h_full()
             .flex()
             .items_center()
             .justify_center()
+            .content_center()
+            .font_family("Segoe Fluent Icons")
+            .text_size(px(10.))
             .child(label)
-            .hover(|this| this.bg(hover_color))
+            .hover(|style| style.bg(hover_color))
     }
 }
 
 impl Render for Titlebar {
-    fn render(&mut self, _cx: &mut ViewContext<Self>) -> impl IntoElement {
+    fn render(&mut self, cx: &mut ViewContext<Self>) -> impl IntoElement {
         if cfg!(target_os = "windows") {
+            let theme = cx.global::<Theme>();
+
             div()
                 .flex()
                 .flex_row()
+                .h((1.75 * cx.rem_size()).max(px(34.)))
                 .justify_end()
-                .child(Self::windows_button("_".into(), rgba(0xaaaaaa33)))
-                .child(Self::windows_button("□".into(), rgba(0xaaaaaa33)))
-                .child(Self::windows_button("×".into(), rgb(0xcc2222)))
+                .children([
+                    Self::windows_button("\u{e921}".into(), theme.colors.bg_button_hover),
+                    if cx.is_maximized() {
+                        Self::windows_button("\u{e923}".into(), theme.colors.bg_button_hover)
+                    } else {
+                        Self::windows_button("\u{e922}".into(), theme.colors.bg_button_hover)
+                    },
+                    Self::windows_button("\u{e8bb}".into(), theme.colors.bg_close_button_hover),
+                ])
         } else {
-            div().h(rems(1.))
+            div().h(rems(1.5))
         }
     }
 }
@@ -66,13 +76,14 @@ impl Render for Display {
         // todo: figure out how to calculate text width for given font/style/characters
         let rs = cx.rem_size();
         let w = cx.viewport_size().width - 2. * rems(0.5).to_pixels(rs);
-        let h_to_fit = 1.82 * w / value.len() as f32;
+        let h_to_fit = 1.65 * w / value.len() as f32;
 
         div()
             .flex()
             .justify_end()
+            .px_2()
             .font_weight(FontWeight::THIN)
-            .line_height(rems(3.75))
+            .line_height(rems(3.25))
             .text_size(rems(3.).to_pixels(rs).min(h_to_fit))
             .child(value)
     }
@@ -95,7 +106,7 @@ impl Keypad {
     }
 
     fn button(
-        label: String,
+        child: impl IntoElement,
         theme: &Theme,
         listener: impl Fn(&MouseDownEvent, &mut WindowContext) + 'static,
     ) -> Div {
@@ -106,11 +117,79 @@ impl Keypad {
             .items_center()
             .justify_center()
             .rounded_lg()
-            .bg(theme.colors.bg_secondary)
-            .hover(|this| this.bg(theme.colors.bg_primary))
+            .bg(theme.colors.bg_button)
+            .hover(|this| this.bg(theme.colors.bg_button_hover))
             .cursor_pointer()
-            .child(label)
+            .child(child)
             .on_mouse_down(MouseButton::Left, listener)
+    }
+
+    fn icon(name: IconName, theme: &Theme) -> Icon {
+        Icon::new(name, theme.colors.text, rems(1.25))
+    }
+
+    fn button_input(input: char, theme: &Theme) -> Div {
+        Self::button(input.to_string(), theme, move |_, cx| {
+            cx.global_mut::<State>().add_input(input);
+        })
+    }
+
+    fn button_clear(theme: &Theme) -> Div {
+        Self::button("C", theme, move |_, cx| {
+            cx.set_global(State::new());
+        })
+    }
+
+    fn button_multiply(theme: &Theme) -> Div {
+        Self::button(Self::icon(IconName::Close, theme), theme, move |_, cx| {
+            cx.global_mut::<State>().select(Operator::Multiply);
+        })
+    }
+
+    fn button_divide(theme: &Theme) -> Div {
+        Self::button("/", theme, move |_, cx| {
+            cx.global_mut::<State>().select(Operator::Divide);
+        })
+    }
+
+    fn button_delete(theme: &Theme) -> Div {
+        Self::button(
+            Self::icon(IconName::Backspace, theme),
+            theme,
+            move |_, cx| {
+                cx.global_mut::<State>().backspace();
+            },
+        )
+    }
+
+    fn button_exponent(theme: &Theme) -> Div {
+        Self::button("^", theme, move |_, cx| {
+            cx.global_mut::<State>().select(Operator::Exponent);
+        })
+    }
+
+    fn button_add(theme: &Theme) -> Div {
+        Self::button("+", theme, move |_, cx| {
+            cx.global_mut::<State>().select(Operator::Add);
+        })
+    }
+
+    fn button_subtract(theme: &Theme) -> Div {
+        Self::button("-", theme, move |_, cx| {
+            cx.global_mut::<State>().select(Operator::Subtract);
+        })
+    }
+
+    fn button_negate(theme: &Theme) -> Div {
+        Self::button("+/-", theme, move |_, cx| {
+            cx.global_mut::<State>().negate();
+        })
+    }
+
+    fn button_equals(theme: &Theme) -> Div {
+        Self::button("=", theme, move |_, cx| {
+            cx.global_mut::<State>().equals();
+        })
     }
 }
 
@@ -118,82 +197,38 @@ impl Render for Keypad {
     fn render(&mut self, cx: &mut ViewContext<Self>) -> impl IntoElement {
         let theme = cx.global::<Theme>();
 
-        Self::col()
-            .child(
-                Self::row()
-                    .child(Self::button("C".into(), theme, move |_, cx| {
-                        cx.set_global(State::new());
-                    }))
-                    .child(Self::button("*".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().select(Operator::Multiply);
-                    }))
-                    .child(Self::button("/".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().select(Operator::Divide);
-                    }))
-                    .child(Self::button("⌫".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().backspace();
-                    })),
-            )
-            .child(
-                Self::row()
-                    .child(Self::button("7".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().add_input('7');
-                    }))
-                    .child(Self::button("8".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().add_input('8');
-                    }))
-                    .child(Self::button("9".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().add_input('9');
-                    }))
-                    .child(Self::button("^".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().select(Operator::Exponent);
-                    })),
-            )
-            .child(
-                Self::row()
-                    .child(Self::button("4".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().add_input('4');
-                    }))
-                    .child(Self::button("5".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().add_input('5');
-                    }))
-                    .child(Self::button("6".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().add_input('6');
-                    }))
-                    .child(Self::button("-".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().select(Operator::Subtract);
-                    })),
-            )
-            .child(
-                Self::row()
-                    .child(Self::button("1".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().add_input('1');
-                    }))
-                    .child(Self::button("2".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().add_input('2');
-                    }))
-                    .child(Self::button("3".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().add_input('3');
-                    }))
-                    .child(Self::button("+".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().select(Operator::Add);
-                    })),
-            )
-            .child(
-                Self::row()
-                    .child(Self::button("+/-".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().negate();
-                    }))
-                    .child(Self::button("0".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().add_input('0');
-                    }))
-                    .child(Self::button(".".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().add_input('.');
-                    }))
-                    .child(Self::button("=".into(), theme, move |_, cx| {
-                        cx.global_mut::<State>().equals();
-                    })),
-            )
+        div().flex().flex_grow().p_2().child(Self::col().children([
+            Self::row().children([
+                Self::button_clear(theme),
+                Self::button_multiply(theme),
+                Self::button_divide(theme),
+                Self::button_delete(theme),
+            ]),
+            Self::row().children([
+                Self::button_input('7', theme),
+                Self::button_input('8', theme),
+                Self::button_input('9', theme),
+                Self::button_exponent(theme),
+            ]),
+            Self::row().children([
+                Self::button_input('4', theme),
+                Self::button_input('5', theme),
+                Self::button_input('6', theme),
+                Self::button_subtract(theme),
+            ]),
+            Self::row().children([
+                Self::button_input('1', theme),
+                Self::button_input('2', theme),
+                Self::button_input('3', theme),
+                Self::button_add(theme),
+            ]),
+            Self::row().children([
+                Self::button_negate(theme),
+                Self::button_input('0', theme),
+                Self::button_input('.', theme),
+                Self::button_equals(theme),
+            ]),
+        ]))
     }
 }
 
@@ -213,6 +248,7 @@ impl Root {
         let titlebar = Titlebar::build(cx);
         let display = Display::build(cx);
         let keypad = Keypad::build(cx);
+
         cx.new_view(|_cx| Root {
             titlebar,
             display,
@@ -231,15 +267,9 @@ impl Render for Root {
             .flex_col()
             .bg(theme.colors.bg_window)
             .text_color(theme.colors.text)
+            .font_family(theme.fonts.main_family.to_string())
             .child(self.titlebar.clone())
-            .child(
-                div()
-                    .flex()
-                    .flex_col()
-                    .flex_grow()
-                    .p_2()
-                    .child(self.display.clone())
-                    .child(self.keypad.clone()),
-            )
+            .child(self.display.clone())
+            .child(self.keypad.clone())
     }
 }

@@ -1,3 +1,4 @@
+use assets::Assets;
 use gpui::*;
 
 use crate::state::State;
@@ -24,11 +25,30 @@ fn get_window_options(bounds: Bounds<DevicePixels>) -> WindowOptions {
     }
 }
 
-pub fn run_app(app: App) {
-    app.run(|cx: &mut AppContext| {
+fn load_fonts(cx: &AppContext) -> Result<()> {
+    let asset_source = cx.asset_source();
+
+    let fonts = asset_source
+        .list("fonts")?
+        .iter()
+        .filter_map(|path| {
+            if path.ends_with(".ttf") {
+                asset_source.load(path).ok()
+            } else {
+                None
+            }
+        })
+        .collect::<Vec<_>>();
+
+    cx.text_system().add_fonts(fonts)
+}
+
+pub fn run_app() {
+    App::new().with_assets(Assets).run(|cx: &mut AppContext| {
         cx.activate(true);
         cx.set_global(Theme::default());
         cx.set_global(State::new());
+        let _ = load_fonts(cx); // might fail, don't really care yet
         let bounds = Bounds::centered(None, size(px(APP_WIDTH), px(APP_HEIGHT)), cx);
         cx.open_window(get_window_options(bounds), Root::build);
     });
