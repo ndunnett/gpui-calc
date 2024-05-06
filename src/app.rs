@@ -1,9 +1,9 @@
-use assets::Assets;
 use gpui::*;
 
 use crate::state::State;
 use crate::theme::Theme;
 use crate::view::Root;
+use crate::assets::Assets;
 
 const WINDOW_SIZE: Size<Pixels> = Size {
     width: px(230.),

@@ -5,6 +5,7 @@ mod icon;
 mod state;
 mod theme;
 mod view;
+mod assets;
 
 use crate::app::run_app;
 

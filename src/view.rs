@@ -10,7 +10,6 @@ struct Titlebar;
 
 impl Titlebar {
     fn build(cx: &mut WindowContext) -> View<Self> {
-        println!("\npx: {}\n", (rems(2.) * cx.rem_size()).0);
         cx.new_view(|_cx| Self)
     }
 
@@ -38,7 +37,7 @@ impl Render for Titlebar {
                 .flex()
                 .flex_row()
                 .h((2. * cx.rem_size()).max(px(32.)))
-                .mb_2()
+                .mb_0p5()
                 .justify_end()
                 .children([
                     Self::windows_button("\u{e921}".into(), theme.colors.bg_button_hover),
@@ -80,13 +79,13 @@ impl Render for Display {
         // todo: figure out how to calculate text width for given font/style/characters
         let rs = cx.rem_size();
         let w = cx.viewport_size().width - 2. * rems(0.5).to_pixels(rs);
-        let h_to_fit = 1.65 * w / value.len() as f32;
+        let h_to_fit = 1.77 * w / value.len() as f32;
 
         div()
             .flex()
             .justify_end()
             .px_2()
-            .font_weight(FontWeight::THIN)
+            .font_weight(FontWeight::EXTRA_LIGHT)
             .line_height(rems(3.25))
             .text_size(rems(3.).to_pixels(rs).min(h_to_fit))
             .child(value)

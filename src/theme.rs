@@ -27,7 +27,7 @@ pub struct Fonts {
 impl Default for Fonts {
     fn default() -> Self {
         Self {
-            family: "Zed Sans".into(),
+            family: "Noto Sans".into(),
         }
     }
 }
