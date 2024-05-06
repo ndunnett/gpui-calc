@@ -3,20 +3,6 @@ use gpui::*;
 use crate::state::{Operator, State};
 use crate::theme::Theme;
 
-fn button(label: String, theme: &Theme) -> Div {
-    div()
-        .w_full()
-        .flex()
-        .flex_grow()
-        .items_center()
-        .justify_center()
-        .rounded_lg()
-        .bg(theme.colors.bg_secondary)
-        .hover(|this| this.bg(theme.colors.bg_primary))
-        .cursor_pointer()
-        .child(label)
-}
-
 #[derive(Clone, Copy)]
 struct Titlebar;
 
@@ -49,7 +35,7 @@ impl Render for Titlebar {
                 .justify_end()
                 .child(Self::windows_button("_".into(), rgba(0xaaaaaa33)))
                 .child(Self::windows_button("□".into(), rgba(0xaaaaaa33)))
-                .child(Self::windows_button("×".into(), rgba(0xcc2222ff)))
+                .child(Self::windows_button("×".into(), rgb(0xcc2222)))
         } else {
             div().h(rems(1.))
         }
@@ -75,6 +61,9 @@ impl Render for Display {
             state.input.clone().unwrap()
         };
 
+        // surely there is a better way to this
+        // todo: figure out how to get available space for an element
+        // todo: figure out how to calculate text width for given font/style/characters
         let rs = cx.rem_size();
         let w = cx.viewport_size().width - 2. * rems(0.5).to_pixels(rs);
         let h_to_fit = 1.82 * w / value.len() as f32;
@@ -86,7 +75,6 @@ impl Render for Display {
             .line_height(rems(3.75))
             .text_size(rems(3.).to_pixels(rs).min(h_to_fit))
             .child(value)
-            .neg_pt_2p5()
     }
 }
 
@@ -97,171 +85,114 @@ impl Keypad {
     fn build(cx: &mut WindowContext) -> View<Self> {
         cx.new_view(|_cx| Self)
     }
+
+    fn col() -> Div {
+        div().flex().flex_col().flex_grow().gap_1()
+    }
+
+    fn row() -> Div {
+        div().flex().flex_row().flex_grow().gap_1()
+    }
+
+    fn button(
+        label: String,
+        theme: &Theme,
+        listener: impl Fn(&MouseDownEvent, &mut WindowContext) + 'static,
+    ) -> Div {
+        div()
+            .w_full()
+            .flex()
+            .flex_grow()
+            .items_center()
+            .justify_center()
+            .rounded_lg()
+            .bg(theme.colors.bg_secondary)
+            .hover(|this| this.bg(theme.colors.bg_primary))
+            .cursor_pointer()
+            .child(label)
+            .on_mouse_down(MouseButton::Left, listener)
+    }
 }
 
 impl Render for Keypad {
     fn render(&mut self, cx: &mut ViewContext<Self>) -> impl IntoElement {
         let theme = cx.global::<Theme>();
 
-        div()
-            .flex()
-            .flex_col()
-            .flex_grow()
-            .gap_1()
+        Self::col()
             .child(
-                div()
-                    .flex()
-                    .flex_row()
-                    .flex_grow()
-                    .gap_1()
-                    .child(button("C".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.set_global(State::new());
-                        },
-                    ))
-                    .child(button("*".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().select(Operator::Multiply);
-                        },
-                    ))
-                    .child(button("/".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().select(Operator::Divide);
-                        },
-                    ))
-                    .child(button("⌫".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().backspace();
-                        },
-                    )),
+                Self::row()
+                    .child(Self::button("C".into(), theme, move |_, cx| {
+                        cx.set_global(State::new());
+                    }))
+                    .child(Self::button("*".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().select(Operator::Multiply);
+                    }))
+                    .child(Self::button("/".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().select(Operator::Divide);
+                    }))
+                    .child(Self::button("⌫".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().backspace();
+                    })),
             )
             .child(
-                div()
-                    .flex()
-                    .flex_row()
-                    .flex_grow()
-                    .gap_1()
-                    .child(button("7".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().add_input('7');
-                        },
-                    ))
-                    .child(button("8".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().add_input('8');
-                        },
-                    ))
-                    .child(button("9".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().add_input('9');
-                        },
-                    ))
-                    .child(button("^".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().select(Operator::Exponent);
-                        },
-                    )),
+                Self::row()
+                    .child(Self::button("7".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().add_input('7');
+                    }))
+                    .child(Self::button("8".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().add_input('8');
+                    }))
+                    .child(Self::button("9".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().add_input('9');
+                    }))
+                    .child(Self::button("^".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().select(Operator::Exponent);
+                    })),
             )
             .child(
-                div()
-                    .flex()
-                    .flex_row()
-                    .flex_grow()
-                    .gap_1()
-                    .child(button("4".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().add_input('4');
-                        },
-                    ))
-                    .child(button("5".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().add_input('5');
-                        },
-                    ))
-                    .child(button("6".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().add_input('6');
-                        },
-                    ))
-                    .child(button("-".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().select(Operator::Subtract);
-                        },
-                    )),
+                Self::row()
+                    .child(Self::button("4".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().add_input('4');
+                    }))
+                    .child(Self::button("5".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().add_input('5');
+                    }))
+                    .child(Self::button("6".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().add_input('6');
+                    }))
+                    .child(Self::button("-".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().select(Operator::Subtract);
+                    })),
             )
             .child(
-                div()
-                    .flex()
-                    .flex_row()
-                    .flex_grow()
-                    .gap_1()
-                    .child(button("1".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().add_input('1');
-                        },
-                    ))
-                    .child(button("2".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().add_input('2');
-                        },
-                    ))
-                    .child(button("3".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().add_input('3');
-                        },
-                    ))
-                    .child(button("+".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().select(Operator::Add);
-                        },
-                    )),
+                Self::row()
+                    .child(Self::button("1".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().add_input('1');
+                    }))
+                    .child(Self::button("2".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().add_input('2');
+                    }))
+                    .child(Self::button("3".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().add_input('3');
+                    }))
+                    .child(Self::button("+".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().select(Operator::Add);
+                    })),
             )
             .child(
-                div()
-                    .flex()
-                    .flex_row()
-                    .flex_grow()
-                    .gap_1()
-                    .child(button("+/-".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().negate();
-                        },
-                    ))
-                    .child(button("0".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().add_input('0');
-                        },
-                    ))
-                    .child(button(".".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().add_input('.');
-                        },
-                    ))
-                    .child(button("=".into(), theme).on_mouse_down(
-                        MouseButton::Left,
-                        move |_, cx| {
-                            cx.global_mut::<State>().equals();
-                        },
-                    )),
+                Self::row()
+                    .child(Self::button("+/-".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().negate();
+                    }))
+                    .child(Self::button("0".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().add_input('0');
+                    }))
+                    .child(Self::button(".".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().add_input('.');
+                    }))
+                    .child(Self::button("=".into(), theme, move |_, cx| {
+                        cx.global_mut::<State>().equals();
+                    })),
             )
     }
 }
