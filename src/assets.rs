@@ -36,7 +36,6 @@ impl Assets {
             .iter()
             .filter_map(|path| {
                 if path.ends_with(".ttf") {
-                    println!("{}", path);
                     cx.asset_source().load(path).ok()
                 } else {
                     None
