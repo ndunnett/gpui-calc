@@ -1,3 +1,4 @@
+use gpui::prelude::FluentBuilder;
 use gpui::*;
 
 use crate::icon::{Icon, IconName};
@@ -9,6 +10,7 @@ struct Titlebar;
 
 impl Titlebar {
     fn build(cx: &mut WindowContext) -> View<Self> {
+        println!("\npx: {}\n", (rems(2.) * cx.rem_size()).0);
         cx.new_view(|_cx| Self)
     }
 
@@ -35,7 +37,8 @@ impl Render for Titlebar {
             div()
                 .flex()
                 .flex_row()
-                .h((1.75 * cx.rem_size()).max(px(34.)))
+                .h((2. * cx.rem_size()).max(px(32.)))
+                .mb_2()
                 .justify_end()
                 .children([
                     Self::windows_button("\u{e921}".into(), theme.colors.bg_button_hover),
@@ -46,6 +49,7 @@ impl Render for Titlebar {
                     },
                     Self::windows_button("\u{e8bb}".into(), theme.colors.bg_close_button_hover),
                 ])
+                .when(cx.is_maximized(), |this| this.mt_2())
         } else {
             div().h(rems(1.5))
         }
