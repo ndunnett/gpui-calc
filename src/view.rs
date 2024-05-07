@@ -37,7 +37,6 @@ impl Render for Titlebar {
                 .flex()
                 .flex_row()
                 .h((2. * cx.rem_size()).max(px(32.)))
-                .mb_0p5()
                 .justify_end()
                 .children([
                     Self::windows_button("\u{e921}".into(), theme.colors.bg_button_hover),
@@ -74,7 +73,7 @@ impl Render for Display {
             state.input.clone().unwrap()
         };
 
-        // surely there is a better way to this
+        // surely there is a better way to do this
         // todo: figure out how to get available space for an element
         // todo: figure out how to calculate text width for given font/style/characters
         let rs = cx.rem_size();
@@ -82,11 +81,11 @@ impl Render for Display {
         let h_to_fit = 1.77 * w / value.len() as f32;
 
         div()
+            .h(rems(3.25))
             .flex()
+            .items_center()
             .justify_end()
-            .px_2()
             .font_weight(FontWeight::EXTRA_LIGHT)
-            .line_height(rems(3.25))
             .text_size(rems(3.).to_pixels(rs).min(h_to_fit))
             .child(value)
     }
@@ -200,7 +199,7 @@ impl Render for Keypad {
     fn render(&mut self, cx: &mut ViewContext<Self>) -> impl IntoElement {
         let theme = cx.global::<Theme>();
 
-        div().flex().flex_grow().p_2().child(Self::col().children([
+        Self::col().children([
             Self::row().children([
                 Self::button_clear(theme),
                 Self::button_multiply(theme),
@@ -231,7 +230,7 @@ impl Render for Keypad {
                 Self::button_input('.', theme),
                 Self::button_equals(theme),
             ]),
-        ]))
+        ])
     }
 }
 
@@ -268,11 +267,21 @@ impl Render for Root {
             .size_full()
             .flex()
             .flex_col()
+            .flex_grow()
             .bg(theme.colors.bg_window)
             .text_color(theme.colors.text)
             .font_family(theme.fonts.family.to_string())
             .child(self.titlebar.clone())
-            .child(self.display.clone())
-            .child(self.keypad.clone())
+            .child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .flex_grow()
+                    .px_2()
+                    .pb_2()
+                    .gap_2()
+                    .child(self.display.clone())
+                    .child(self.keypad.clone()),
+            )
     }
 }
