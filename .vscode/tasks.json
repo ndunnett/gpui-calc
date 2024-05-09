@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "package for macOS",
+            "label": "bundle for macOS",
             "type": "shell",
-            "command": "cargo package --release"
+            "command": "cargo bundle --release"
         },
     ]
 }

@@ -2,7 +2,7 @@ use gpui::prelude::FluentBuilder;
 use gpui::*;
 
 use crate::icon::{Icon, IconName};
-use crate::state::{Operator, State};
+use crate::state::{Event, Operator, StateModel};
 use crate::theme::Theme;
 
 #[derive(Clone, Copy)]
@@ -65,8 +65,14 @@ impl Display {
 
 impl Render for Display {
     fn render(&mut self, cx: &mut ViewContext<Self>) -> impl IntoElement {
-        let state = cx.global::<State>();
+        let model = cx.global::<StateModel>().clone();
 
+        cx.observe(&model.inner, |_this, _model, cx| {
+            cx.notify();
+        })
+        .detach();
+
+        let state = model.inner.read(cx);
         let value = if state.input.is_none() {
             state.formatted_calculation()
         } else {
@@ -132,25 +138,25 @@ impl Keypad {
 
     fn button_input(input: char, theme: &Theme) -> Div {
         Self::button(input.to_string(), theme, move |_, cx| {
-            cx.global_mut::<State>().add_input(input);
+            StateModel::emit(Event::Input(input), cx);
         })
     }
 
     fn button_clear(theme: &Theme) -> Div {
         Self::button("C", theme, move |_, cx| {
-            cx.set_global(State::new());
+            StateModel::emit(Event::Clear, cx);
         })
     }
 
     fn button_multiply(theme: &Theme) -> Div {
         Self::button(Self::icon(IconName::Close, theme), theme, move |_, cx| {
-            cx.global_mut::<State>().select(Operator::Multiply);
+            StateModel::emit(Event::Select(Operator::Multiply), cx);
         })
     }
 
     fn button_divide(theme: &Theme) -> Div {
         Self::button("/", theme, move |_, cx| {
-            cx.global_mut::<State>().select(Operator::Divide);
+            StateModel::emit(Event::Select(Operator::Divide), cx);
         })
     }
 
@@ -159,38 +165,38 @@ impl Keypad {
             Self::icon(IconName::Backspace, theme),
             theme,
             move |_, cx| {
-                cx.global_mut::<State>().backspace();
+                StateModel::emit(Event::Backspace, cx);
             },
         )
     }
 
     fn button_exponent(theme: &Theme) -> Div {
         Self::button("^", theme, move |_, cx| {
-            cx.global_mut::<State>().select(Operator::Exponent);
+            StateModel::emit(Event::Select(Operator::Exponent), cx);
         })
     }
 
     fn button_add(theme: &Theme) -> Div {
         Self::button("+", theme, move |_, cx| {
-            cx.global_mut::<State>().select(Operator::Add);
+            StateModel::emit(Event::Select(Operator::Add), cx);
         })
     }
 
     fn button_subtract(theme: &Theme) -> Div {
         Self::button("-", theme, move |_, cx| {
-            cx.global_mut::<State>().select(Operator::Subtract);
+            StateModel::emit(Event::Select(Operator::Subtract), cx);
         })
     }
 
     fn button_negate(theme: &Theme) -> Div {
         Self::button("+/-", theme, move |_, cx| {
-            cx.global_mut::<State>().negate();
+            StateModel::emit(Event::Negate, cx);
         })
     }
 
     fn button_equals(theme: &Theme) -> Div {
         Self::button("=", theme, move |_, cx| {
-            cx.global_mut::<State>().equals();
+            StateModel::emit(Event::Equals, cx);
         })
     }
 }
@@ -247,6 +253,7 @@ impl Root {
             true
         });
 
+        StateModel::init(cx);
         let titlebar = Titlebar::build(cx);
         let display = Display::build(cx);
         let keypad = Keypad::build(cx);
