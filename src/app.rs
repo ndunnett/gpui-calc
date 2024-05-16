@@ -1,8 +1,9 @@
 use gpui::*;
 
 use crate::assets::Assets;
+use crate::state::StateModel;
 use crate::theme::Theme;
-use crate::ui::build_ui;
+use crate::ui::Root;
 
 const WINDOW_SIZE: Size<Pixels> = Size {
     width: px(230.),
@@ -29,10 +30,11 @@ fn get_window_options(bounds: Bounds<DevicePixels>) -> WindowOptions {
 
 pub fn run_app() {
     App::new().with_assets(Assets).run(|cx: &mut AppContext| {
-        cx.activate(true);
         cx.set_global(Theme::default());
         let _ = Assets.load_fonts(cx);
+        StateModel::build(cx);
         let bounds = Bounds::centered(None, WINDOW_SIZE, cx);
-        cx.open_window(get_window_options(bounds), build_ui);
+        cx.open_window(get_window_options(bounds), Root::build);
+        cx.activate(true);
     });
 }

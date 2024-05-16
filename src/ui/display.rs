@@ -21,11 +21,7 @@ impl Render for Display {
         .detach();
 
         let state = model.inner.read(cx);
-        let value = if state.input.is_none() {
-            state.formatted_calculation()
-        } else {
-            state.input.clone().unwrap()
-        };
+        let value = state.display();
 
         // surely there is a better way to do this
         // todo: figure out how to get available space for an element

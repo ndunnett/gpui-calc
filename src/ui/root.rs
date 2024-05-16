@@ -11,6 +11,11 @@ pub struct Root {
 
 impl Root {
     pub fn build(cx: &mut WindowContext) -> View<Root> {
+        cx.on_window_should_close(|cx| {
+            cx.quit();
+            true
+        });
+
         let titlebar = Titlebar::build(cx);
         let display = Display::build(cx);
         let keypad = Keypad::build(cx);
