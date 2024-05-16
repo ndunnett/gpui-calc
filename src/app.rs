@@ -2,7 +2,7 @@ use gpui::*;
 
 use crate::assets::Assets;
 use crate::theme::Theme;
-use crate::view::Root;
+use crate::ui::build_ui;
 
 const WINDOW_SIZE: Size<Pixels> = Size {
     width: px(230.),
@@ -33,6 +33,6 @@ pub fn run_app() {
         cx.set_global(Theme::default());
         let _ = Assets.load_fonts(cx);
         let bounds = Bounds::centered(None, WINDOW_SIZE, cx);
-        cx.open_window(get_window_options(bounds), Root::build);
+        cx.open_window(get_window_options(bounds), build_ui);
     });
 }

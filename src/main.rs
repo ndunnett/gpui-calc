@@ -1,11 +1,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod app;
-mod icon;
+mod assets;
 mod state;
 mod theme;
-mod view;
-mod assets;
+mod ui;
 
 use crate::app::run_app;
 
