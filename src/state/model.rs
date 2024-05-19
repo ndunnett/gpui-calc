@@ -22,7 +22,7 @@ impl StateModel {
         cx.set_global::<StateModel>(Self { inner: model });
     }
 
-    pub fn emit(event: Event, cx: &mut WindowContext) {
+    pub fn emit(event: Event, cx: &mut AppContext) {
         cx.update_global::<Self, _>(|model, cx| {
             cx.update_model(&model.inner, |_state, cx| {
                 cx.emit(event);
