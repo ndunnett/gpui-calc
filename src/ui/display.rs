@@ -1,6 +1,7 @@
 use gpui::*;
 
 use crate::state::StateModel;
+use crate::theme::Theme;
 
 #[derive(Clone, Copy)]
 pub struct Display;
@@ -14,21 +15,28 @@ impl Display {
 impl Render for Display {
     fn render(&mut self, cx: &mut ViewContext<Self>) -> impl IntoElement {
         let model = cx.global::<StateModel>().clone();
+        let theme = cx.global::<Theme>();
+        let state = model.inner.read(cx);
+        let value = state.display();
+
+        // better than the previous solution but still unsure if
+        // this is the best way to dynamically size text
+        let rs = cx.rem_size();
+        let available_width = cx.viewport_size().width - 2. * rems(0.5).to_pixels(rs);
+        let text_system = cx.text_system();
+        let font_id = text_system.resolve_font(&font(theme.fonts.family.clone()));
+        let text_height = rems(3.).to_pixels(rs);
+        let text_width = value.chars().fold(px(0.), |acc, ch| {
+            acc + text_system
+                .advance(font_id, text_height, ch)
+                .unwrap_or_default()
+                .width
+        });
 
         cx.observe(&model.inner, |_this, _model, cx| {
             cx.notify();
         })
         .detach();
-
-        let state = model.inner.read(cx);
-        let value = state.display();
-
-        // surely there is a better way to do this
-        // todo: figure out how to get available space for an element
-        // todo: figure out how to calculate text width for given font/style/characters
-        let rs = cx.rem_size();
-        let w = cx.viewport_size().width - 2. * rems(0.5).to_pixels(rs);
-        let h_to_fit = 1.77 * w / value.len() as f32;
 
         div()
             .h(rems(3.25))
@@ -36,7 +44,7 @@ impl Render for Display {
             .items_center()
             .justify_end()
             .font_weight(FontWeight::EXTRA_LIGHT)
-            .text_size(rems(3.).to_pixels(rs).min(h_to_fit))
+            .text_size(text_height * (available_width / text_width).min(1.))
             .child(value)
     }
 }
