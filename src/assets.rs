@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use anyhow::anyhow;
 use gpui::*;
 use rust_embed::RustEmbed;
@@ -10,10 +12,12 @@ use rust_embed::RustEmbed;
 pub struct Assets;
 
 impl AssetSource for Assets {
-    fn load(&self, path: &str) -> Result<std::borrow::Cow<'static, [u8]>> {
-        Self::get(path)
-            .map(|f| f.data)
-            .ok_or_else(|| anyhow!("could not find asset at path \"{}\"", path))
+    fn load(&self, path: &str) -> Result<Option<Cow<'static, [u8]>>> {
+        if let Some(f) = Self::get(path) {
+            Ok(Some(f.data))
+        } else {
+            Err(anyhow!("could not find asset at path \"{}\"", path))
+        }
     }
 
     fn list(&self, path: &str) -> Result<Vec<SharedString>> {
@@ -36,7 +40,7 @@ impl Assets {
             .iter()
             .filter_map(|path| {
                 if path.ends_with(".ttf") {
-                    cx.asset_source().load(path).ok()
+                    cx.asset_source().load(path).unwrap_or(None)
                 } else {
                     None
                 }
