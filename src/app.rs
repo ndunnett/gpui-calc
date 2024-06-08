@@ -1,6 +1,7 @@
 use gpui::*;
 
 use crate::assets::Assets;
+use crate::keybinds::set_keybinds;
 use crate::state::StateModel;
 use crate::theme::Theme;
 use crate::ui::Root;
@@ -22,6 +23,7 @@ pub fn run_app() {
         cx.set_global(Theme::default());
         let _ = Assets.load_fonts(cx);
         StateModel::build(cx);
+        set_keybinds(cx);
 
         let window_options = WindowOptions {
             window_bounds: Some(WindowBounds::Windowed(Bounds::centered(
