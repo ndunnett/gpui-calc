@@ -2,7 +2,6 @@
 
 mod app;
 mod assets;
-mod keybinds;
 mod state;
 mod theme;
 mod ui;

@@ -1,7 +1,6 @@
 use gpui::*;
 
 use crate::assets::Assets;
-use crate::keybinds::set_keybinds;
 use crate::state::StateModel;
 use crate::theme::Theme;
 use crate::ui::Root;
@@ -34,7 +33,6 @@ pub fn run_app() {
         cx.set_global(Theme::default());
         let _ = Assets.load_fonts(cx);
         StateModel::build(cx);
-        set_keybinds(cx);
         let bounds = Bounds::centered(None, WINDOW_SIZE, cx);
         cx.open_window(get_window_options(bounds), Root::build);
         cx.activate(true);
