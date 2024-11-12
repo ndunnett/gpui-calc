@@ -3,15 +3,25 @@ use gpui::*;
 use crate::theme::Theme;
 
 pub enum IconType {
-    Backspace,
-    Close,
+    Delete,
+    Diff,
+    Divide,
+    Equal,
+    Minus,
+    Plus,
+    X,
 }
 
 impl IconType {
     fn path(self) -> &'static str {
         match self {
-            IconType::Backspace => "icons/backspace.svg",
-            IconType::Close => "icons/x.svg",
+            IconType::Delete => "icons/delete.svg",
+            IconType::Diff => "icons/diff.svg",
+            IconType::Divide => "icons/divide.svg",
+            IconType::Equal => "icons/equal.svg",
+            IconType::Minus => "icons/minus.svg",
+            IconType::Plus => "icons/plus.svg",
+            IconType::X => "icons/x.svg",
         }
     }
 }
@@ -38,22 +48,17 @@ impl Icon {
 
 impl RenderOnce for Icon {
     fn render(self, cx: &mut WindowContext) -> impl IntoElement {
-        let mut element = svg().path(self.path).flex_none();
+        let color = self
+            .color
+            .unwrap_or_else(|| cx.global::<Theme>().colors.text);
 
-        if let Some(color) = self.color {
-            element = element.text_color(color);
-        } else {
-            let theme = cx.global::<Theme>();
-            element = element.text_color(theme.colors.text);
-        }
+        let size = self.size.unwrap_or(rems(1.25));
 
-        if let Some(size) = self.size {
-            element = element.size(size);
-        } else {
-            element = element.size(rems(1.25));
-        }
-
-        element
+        svg()
+            .path(self.path)
+            .flex_none()
+            .text_color(color)
+            .size(size)
     }
 }
 

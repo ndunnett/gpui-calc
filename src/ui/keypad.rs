@@ -35,33 +35,33 @@ impl Render for Keypad {
         col().children([
             row().children([
                 button_emitting("C", Event::Clear),
-                button_emitting(icon(IconType::Close), Event::Select(Operator::Multiply)),
-                button_emitting("/", Event::Select(Operator::Divide)),
-                button_emitting(icon(IconType::Backspace), Event::Backspace),
+                button_emitting(icon(IconType::X), Event::Select(Operator::Multiply)),
+                button_emitting(icon(IconType::Divide), Event::Select(Operator::Divide)),
+                button_emitting(icon(IconType::Delete), Event::Backspace),
             ]),
             row().children([
                 button_input('7'),
                 button_input('8'),
                 button_input('9'),
-                button_emitting("^", Event::Select(Operator::Exponent)),
+                button_emitting("𝑥 ʸ", Event::Select(Operator::Exponent)),
             ]),
             row().children([
                 button_input('4'),
                 button_input('5'),
                 button_input('6'),
-                button_emitting("-", Event::Select(Operator::Subtract)),
+                button_emitting(icon(IconType::Minus), Event::Select(Operator::Subtract)),
             ]),
             row().children([
                 button_input('1'),
                 button_input('2'),
                 button_input('3'),
-                button_emitting("+", Event::Select(Operator::Add)),
+                button_emitting(icon(IconType::Plus), Event::Select(Operator::Add)),
             ]),
             row().children([
-                button_emitting("+/-", Event::Negate),
+                button_emitting(icon(IconType::Diff).size(Rems(1.)), Event::Negate),
                 button_input('0'),
                 button_input('.'),
-                button_emitting("=", Event::Equals),
+                button_emitting(icon(IconType::Equal), Event::Equals),
             ]),
         ])
     }
