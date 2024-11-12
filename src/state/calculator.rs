@@ -1,4 +1,4 @@
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Operator {
     Constant,
     Exponent,
@@ -63,6 +63,10 @@ impl Calculator {
         }
     }
 
+    pub fn selected(&self) -> Option<Operator> {
+        self.selected
+    }
+
     fn push_operation(&mut self) {
         let input = if let Some(input) = self.input.clone() {
             input.parse::<f64>().ok()
@@ -87,8 +91,12 @@ impl Calculator {
     }
 
     pub fn select(&mut self, operator: Operator) {
-        self.push_operation();
-        self.selected = Some(operator);
+        if self.selected == Some(operator) {
+            self.selected = None;
+        } else {
+            self.push_operation();
+            self.selected = Some(operator);
+        }
     }
 
     pub fn input(&mut self, c: char) {
