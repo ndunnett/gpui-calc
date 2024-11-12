@@ -5,9 +5,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-gpui = { git = "https://github.com/zed-industries/zed", rev = "75f8be6a0f711bd695cca04d89efa42c8108068c" }
-anyhow = "1.0.86"
-rust-embed = { version = "8.4.0", features = ["include-exclude"] }
+gpui = { git = "https://github.com/zed-industries/zed", rev = "181c3724aa99e67ebc5f8147dce8d6ee2f77276d" }
+anyhow = "1.0.93"
+rust-embed = { version = "8.5.0", features = ["include-exclude"] }
 
 [[bin]]
 name = "gpui-calc"

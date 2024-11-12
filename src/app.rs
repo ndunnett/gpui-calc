@@ -12,7 +12,7 @@ const WINDOW_SIZE: Size<Pixels> = Size {
 
 const APP_TITLE: &str = "GPUI Calculator";
 
-fn get_window_options(bounds: Bounds<DevicePixels>) -> WindowOptions {
+fn get_window_options(bounds: Bounds<Pixels>) -> WindowOptions {
     WindowOptions {
         window_bounds: Some(WindowBounds::Windowed(bounds)),
         titlebar: Some(TitlebarOptions {
@@ -34,7 +34,7 @@ pub fn run_app() {
         let _ = Assets.load_fonts(cx);
         StateModel::build(cx);
         let bounds = Bounds::centered(None, WINDOW_SIZE, cx);
-        cx.open_window(get_window_options(bounds), Root::build);
+        let _ = cx.open_window(get_window_options(bounds), Root::build);
         cx.activate(true);
     });
 }
