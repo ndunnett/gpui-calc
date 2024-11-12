@@ -35,6 +35,11 @@ pub fn run_app() {
                 ..Default::default()
             }),
             window_background: WindowBackgroundAppearance::Blurred,
+            kind: if cfg!(target_os = "windows") {
+                WindowKind::Normal
+            } else {
+                WindowKind::PopUp
+            },
             window_min_size: Some(MIN_WINDOW_SIZE),
             ..Default::default()
         };
