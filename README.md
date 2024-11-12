@@ -2,7 +2,7 @@
 
 <p align="center">World's worst calculator, made with <a href="https://github.com/zed-industries/zed/tree/main/crates/gpui">GPUI</a>.</p>
 
-<div align="center"><img src="media/screenshot.png" alt="screenshot" width="230px"/></div>
+<div align="center"><img src="media/screenshot.png" alt="screenshot" width="232px"/></div>
 
 ## Key GPUI features used
 
