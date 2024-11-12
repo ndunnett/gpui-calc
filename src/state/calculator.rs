@@ -156,7 +156,8 @@ impl Calculator {
     }
 
     pub fn pi(&mut self) {
-        self.input = Some("3.141592653589793".into());
+        self.input = Some("3.14159265358979323846264338327950288".into());
+        self.push_operation();
     }
 
     pub fn equals(&mut self) {
