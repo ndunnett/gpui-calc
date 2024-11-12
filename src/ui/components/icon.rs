@@ -8,7 +8,9 @@ pub enum IconType {
     Divide,
     Equal,
     Minus,
+    Pi,
     Plus,
+    Radical,
     X,
 }
 
@@ -20,7 +22,9 @@ impl IconType {
             IconType::Divide => "icons/divide.svg",
             IconType::Equal => "icons/equal.svg",
             IconType::Minus => "icons/minus.svg",
+            IconType::Pi => "icons/pi.svg",
             IconType::Plus => "icons/plus.svg",
+            IconType::Radical => "icons/radical.svg",
             IconType::X => "icons/x.svg",
         }
     }

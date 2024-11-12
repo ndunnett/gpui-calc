@@ -59,16 +59,22 @@ impl Render for Keypad {
     fn render(&mut self, cx: &mut ViewContext<Self>) -> impl IntoElement {
         col().children([
             row().children([
+                button_emitting("inverse", "¹/𝑥", Event::Inverse),
+                button_emitting("pi", icon(IconType::Pi).size(Rems(1.)), Event::Pi),
                 button_emitting("clear", "C", Event::Clear),
-                button_select("multiply", icon(IconType::X), cx, Operator::Multiply),
-                button_select("divide", icon(IconType::Divide), cx, Operator::Divide),
                 button_emitting("backspace", icon(IconType::Delete), Event::Backspace),
+            ]),
+            row().children([
+                button_emitting("square_root", icon(IconType::Radical), Event::SquareRoot),
+                button_emitting("square", "𝑥 ²", Event::Square),
+                button_select("exponent", "𝑥 ʸ", cx, Operator::Exponent),
+                button_select("divide", icon(IconType::Divide), cx, Operator::Divide),
             ]),
             row().children([
                 button_input("seven", '7'),
                 button_input("eight", '8'),
                 button_input("nine", '9'),
-                button_select("exponent", "𝑥 ʸ", cx, Operator::Exponent),
+                button_select("multiply", icon(IconType::X), cx, Operator::Multiply),
             ]),
             row().children([
                 button_input("four", '4'),

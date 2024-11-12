@@ -15,7 +15,6 @@ pub struct Button {
     active: Option<Rgba>,
 }
 
-#[allow(dead_code)]
 impl Button {
     pub fn new(id: impl Into<ElementId>) -> Self {
         Self {

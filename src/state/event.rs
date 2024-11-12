@@ -9,6 +9,10 @@ pub enum Event {
     Backspace,
     Clear,
     Negate,
+    Inverse,
+    Square,
+    SquareRoot,
+    Pi,
     Equals,
 }
 
@@ -20,6 +24,10 @@ impl Event {
             Event::Backspace => calculator.backspace(),
             Event::Clear => calculator.clear(),
             Event::Negate => calculator.negate(),
+            Event::Inverse => calculator.inverse(),
+            Event::Square => calculator.square(),
+            Event::SquareRoot => calculator.square_root(),
+            Event::Pi => calculator.pi(),
             Event::Equals => calculator.equals(),
         }
     }

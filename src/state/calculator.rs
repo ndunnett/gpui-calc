@@ -137,6 +137,28 @@ impl Calculator {
         self.push_operation();
     }
 
+    pub fn inverse(&mut self) {
+        self.select(Operator::Exponent);
+        self.input = Some("-1".into());
+        self.push_operation();
+    }
+
+    pub fn square(&mut self) {
+        self.select(Operator::Exponent);
+        self.input = Some("2".into());
+        self.push_operation();
+    }
+
+    pub fn square_root(&mut self) {
+        self.select(Operator::Exponent);
+        self.input = Some("0.5".into());
+        self.push_operation();
+    }
+
+    pub fn pi(&mut self) {
+        self.input = Some("3.141592653589793".into());
+    }
+
     pub fn equals(&mut self) {
         if self.selected.is_none() && !self.operations.is_empty() {
             if let Some(last_op) = self.operations.last() {
