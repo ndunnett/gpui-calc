@@ -1,9 +1,8 @@
-use gpui::*;
-use prelude::FluentBuilder;
+use gpui::{div, prelude::*, AnyElement, App, ClickEvent, ElementId, Rgba, Window};
 
-use crate::theme::Theme;
+use crate::ui::Theme;
 
-type ClickHandler = Box<dyn Fn(&ClickEvent, &mut WindowContext) + 'static>;
+type ClickHandler = Box<dyn Fn(&ClickEvent, &mut Window, &mut App) + 'static>;
 
 #[derive(IntoElement)]
 pub struct Button {
@@ -29,7 +28,7 @@ impl Button {
 
     pub fn on_click(
         mut self,
-        listener: impl Fn(&ClickEvent, &mut WindowContext) + 'static,
+        listener: impl Fn(&ClickEvent, &mut Window, &mut App) + 'static,
     ) -> Self {
         self.on_click = Some(Box::new(listener));
         self
@@ -57,7 +56,7 @@ impl Button {
 }
 
 impl RenderOnce for Button {
-    fn render(self, cx: &mut WindowContext) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let bg = self
             .bg
             .unwrap_or_else(|| cx.global::<Theme>().colors.bg_button);

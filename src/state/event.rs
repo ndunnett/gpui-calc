@@ -1,4 +1,4 @@
-use gpui::*;
+use gpui::EventEmitter;
 
 use crate::state::{Calculator, Operator};
 

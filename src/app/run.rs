@@ -1,10 +1,13 @@
-use gpui::*;
+use gpui::{
+    px, App, Application, Bounds, Pixels, Size, TitlebarOptions, WindowBackgroundAppearance,
+    WindowBounds, WindowKind, WindowOptions,
+};
 
-use crate::assets::Assets;
-use crate::keybinds::set_keybinds;
-use crate::state::StateModel;
-use crate::theme::Theme;
-use crate::ui::Root;
+use crate::{
+    app::{set_keybinds, Assets},
+    state::StateEntity,
+    ui::{Root, Theme},
+};
 
 const WINDOW_SIZE: Size<Pixels> = Size {
     width: px(230.),
@@ -18,18 +21,18 @@ const MIN_WINDOW_SIZE: Size<Pixels> = Size {
 
 const APP_TITLE: &str = "GPUI Calculator";
 
-pub fn run_app() {
-    App::new().with_assets(Assets).run(|cx: &mut AppContext| {
-        cx.set_global(Theme::default());
-        let _ = Assets.load_fonts(cx);
-        StateModel::build(cx);
-        set_keybinds(cx);
+pub fn run() {
+    Application::new().with_assets(Assets).run(|app: &mut App| {
+        app.set_global(Theme::default());
+        Assets.load_fonts(app).expect("failed to load fonts");
+        StateEntity::build(app);
+        set_keybinds(app);
 
         let window_options = WindowOptions {
             window_bounds: Some(WindowBounds::Windowed(Bounds::centered(
                 None,
                 WINDOW_SIZE,
-                cx,
+                app,
             ))),
             titlebar: Some(TitlebarOptions {
                 title: Some(APP_TITLE.into()),
@@ -46,7 +49,9 @@ pub fn run_app() {
             ..Default::default()
         };
 
-        let _ = cx.open_window(window_options, Root::build);
-        cx.activate(true);
+        app.open_window(window_options, Root::build)
+            .expect("failed to open window");
+
+        app.activate(true);
     });
 }

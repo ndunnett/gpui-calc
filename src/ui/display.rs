@@ -1,28 +1,27 @@
-use gpui::*;
+use gpui::{div, font, prelude::*, px, rems, App, Entity, FontWeight, Window};
 
-use crate::state::StateModel;
-use crate::theme::Theme;
+use crate::{state::StateEntity, ui::Theme};
 
 #[derive(Clone, Copy)]
 pub struct Display;
 
 impl Display {
-    pub fn build(cx: &mut WindowContext) -> View<Self> {
-        cx.new_view(|_cx| Self)
+    pub fn build(app: &mut App) -> Entity<Self> {
+        app.new(|_cx| Self)
     }
 }
 
 impl Render for Display {
-    fn render(&mut self, cx: &mut ViewContext<Self>) -> impl IntoElement {
-        let model = cx.global::<StateModel>().clone();
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let model = cx.global::<StateEntity>().clone();
         let theme = cx.global::<Theme>();
         let state = model.inner.read(cx);
         let value = state.display();
 
         // better than the previous solution but still unsure if
         // this is the best way to dynamically size text
-        let rs = cx.rem_size();
-        let available_width = cx.viewport_size().width - 2. * rems(0.5).to_pixels(rs);
+        let rs = window.rem_size();
+        let available_width = window.viewport_size().width - 2. * rems(0.5).to_pixels(rs);
         let text_system = cx.text_system();
         let font_id = text_system.resolve_font(&font(theme.fonts.family.clone()));
         let text_height = rems(3.).to_pixels(rs);

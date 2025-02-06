@@ -1,6 +1,6 @@
-use gpui::*;
+use gpui::{prelude::*, rems, svg, App, Rems, Rgba, SharedString, Window};
 
-use crate::theme::Theme;
+use crate::ui::Theme;
 
 pub enum IconType {
     Delete,
@@ -51,7 +51,7 @@ impl Icon {
 }
 
 impl RenderOnce for Icon {
-    fn render(self, cx: &mut WindowContext) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let color = self
             .color
             .unwrap_or_else(|| cx.global::<Theme>().colors.text);

@@ -1,26 +1,25 @@
-use gpui::*;
+use gpui::{div, prelude::*, App, Entity, Window};
 
-use crate::theme::Theme;
-use crate::ui::{display::Display, keypad::Keypad, titlebar::Titlebar};
+use crate::ui::{Display, Keypad, Theme, Titlebar};
 
 pub struct Root {
-    titlebar: View<Titlebar>,
-    display: View<Display>,
-    keypad: View<Keypad>,
+    titlebar: Entity<Titlebar>,
+    display: Entity<Display>,
+    keypad: Entity<Keypad>,
 }
 
 impl Root {
-    pub fn build(cx: &mut WindowContext) -> View<Root> {
-        cx.on_window_should_close(|cx| {
-            cx.quit();
+    pub fn build(window: &mut Window, app: &mut App) -> Entity<Root> {
+        window.on_window_should_close(app, |_window: &mut Window, app: &mut App| {
+            app.quit();
             true
         });
 
-        let titlebar = Titlebar::build(cx);
-        let display = Display::build(cx);
-        let keypad = Keypad::build(cx);
+        let titlebar = Titlebar::build(app);
+        let display = Display::build(app);
+        let keypad = Keypad::build(app);
 
-        cx.new_view(|_cx| Root {
+        app.new(|_cx| Root {
             titlebar,
             display,
             keypad,
@@ -29,7 +28,7 @@ impl Root {
 }
 
 impl Render for Root {
-    fn render(&mut self, cx: &mut ViewContext<Self>) -> impl IntoElement {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let theme = cx.global::<Theme>();
 
         div()

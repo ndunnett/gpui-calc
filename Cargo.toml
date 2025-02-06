@@ -5,8 +5,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-gpui = { git = "https://github.com/zed-industries/zed", rev = "181c3724aa99e67ebc5f8147dce8d6ee2f77276d" }
-anyhow = "1.0.93"
+gpui = { git = "https://github.com/zed-industries/zed", rev = "4270f89956b573512984c6bcbfb9544879381461" }
+anyhow = "1.0.95"
 rust-embed = { version = "8.5.0", features = ["include-exclude"] }
 
 [[bin]]

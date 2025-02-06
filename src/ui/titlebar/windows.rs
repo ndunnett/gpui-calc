@@ -1,28 +1,19 @@
-use gpui::*;
+use gpui::{div, prelude::*, px, Div, Rgba, Window};
 
-use crate::theme::Theme;
-
-#[derive(Clone, Copy)]
-pub struct Titlebar;
-
-impl Titlebar {
-    pub fn build(cx: &mut WindowContext) -> View<Self> {
-        cx.new_view(|_cx| Self)
-    }
-}
+use crate::ui::{Theme, Titlebar};
 
 impl Render for Titlebar {
-    fn render(&mut self, cx: &mut ViewContext<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let theme = cx.global::<Theme>();
 
         div()
             .flex()
             .flex_row()
-            .h(cx.rem_size() * if cx.is_maximized() { 2.1 } else { 2. })
+            .h(window.rem_size() * if window.is_maximized() { 2.1 } else { 2. })
             .justify_end()
             .children([
                 WindowsButton::Minimize.render(theme.colors.bg_button_hover),
-                if cx.is_maximized() {
+                if window.is_maximized() {
                     WindowsButton::Restore.render(theme.colors.bg_button_hover)
                 } else {
                     WindowsButton::Maximize.render(theme.colors.bg_button_hover)

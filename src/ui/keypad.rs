@@ -1,8 +1,9 @@
-use gpui::*;
-use prelude::FluentBuilder;
+use gpui::{div, prelude::*, rgba, App, Div, ElementId, Entity, Rems, Window};
 
-use crate::state::{Event, Operator, StateModel};
-use crate::ui::components::*;
+use crate::{
+    state::{Event, Operator, StateEntity},
+    ui::components::{button, icon, Button, IconType},
+};
 
 fn col() -> Div {
     div().flex().flex_col().flex_grow().gap_1()
@@ -15,8 +16,8 @@ fn row() -> Div {
 fn button_emitting(id: impl Into<ElementId>, label: impl IntoElement, event: Event) -> Button {
     button(id)
         .child(label)
-        .on_click(move |_, cx| {
-            StateModel::emit(event, cx);
+        .on_click(move |_, _, app| {
+            StateEntity::emit(event, app);
         })
         .hover(rgba(0x55555555))
         .active(rgba(0x35353555))
@@ -25,10 +26,10 @@ fn button_emitting(id: impl Into<ElementId>, label: impl IntoElement, event: Eve
 fn button_select(
     id: impl Into<ElementId>,
     label: impl IntoElement,
-    cx: &mut ViewContext<Keypad>,
+    cx: &mut Context<Keypad>,
     operator: Operator,
 ) -> Button {
-    let state = cx.global::<StateModel>().inner.read(cx);
+    let state = cx.global::<StateEntity>().inner.read(cx);
 
     button_emitting(id, label, Event::Select(operator)).when_some(
         state.selected(),
@@ -50,13 +51,13 @@ fn button_input(id: impl Into<ElementId>, input: char) -> Button {
 pub struct Keypad;
 
 impl Keypad {
-    pub fn build(cx: &mut WindowContext) -> View<Self> {
-        cx.new_view(|_cx| Self)
+    pub fn build(app: &mut App) -> Entity<Self> {
+        app.new(|_cx| Self)
     }
 }
 
 impl Render for Keypad {
-    fn render(&mut self, cx: &mut ViewContext<Self>) -> impl IntoElement {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         col().children([
             row().children([
                 button_emitting("inverse", "¹/𝑥", Event::Inverse),
