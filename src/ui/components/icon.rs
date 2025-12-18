@@ -1,4 +1,4 @@
-use gpui::{prelude::*, rems, svg, App, Rems, Rgba, SharedString, Window};
+use gpui::{App, Rems, Rgba, SharedString, Window, prelude::*, rems, svg};
 
 use crate::ui::Theme;
 

@@ -1,4 +1,4 @@
-use gpui::{div, prelude::*, rems, Window};
+use gpui::{Window, div, prelude::*, rems};
 
 use crate::ui::Titlebar;
 

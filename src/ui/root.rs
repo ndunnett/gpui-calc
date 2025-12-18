@@ -1,4 +1,4 @@
-use gpui::{div, prelude::*, App, Entity, Window};
+use gpui::{App, Entity, Window, div, prelude::*};
 
 use crate::ui::{Display, Keypad, Theme, Titlebar};
 

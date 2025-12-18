@@ -1,4 +1,4 @@
-use gpui::{div, prelude::*, AnyElement, App, ClickEvent, ElementId, Rgba, Window};
+use gpui::{AnyElement, App, ClickEvent, ElementId, Rgba, Window, div, prelude::*};
 
 use crate::ui::Theme;
 

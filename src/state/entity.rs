@@ -1,4 +1,4 @@
-use gpui::{prelude::*, App, Entity, Global};
+use gpui::{App, Entity, Global, prelude::*};
 
 use crate::state::{Calculator, Event};
 

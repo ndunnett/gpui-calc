@@ -16,7 +16,7 @@ impl AssetSource for Assets {
         if let Some(f) = Self::get(path) {
             Ok(Some(f.data))
         } else {
-            Err(anyhow!("could not find asset at path \"{}\"", path))
+            Err(anyhow!("could not find asset at path \"{path}\""))
         }
     }
 

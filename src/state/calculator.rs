@@ -118,10 +118,10 @@ impl Calculator {
     }
 
     pub fn backspace(&mut self) {
-        if let Some(input) = &mut self.input {
-            if !input.is_empty() {
-                input.pop();
-            }
+        if let Some(input) = &mut self.input
+            && !input.is_empty()
+        {
+            input.pop();
         }
     }
 
@@ -161,11 +161,12 @@ impl Calculator {
     }
 
     pub fn equals(&mut self) {
-        if self.selected.is_none() && !self.operations.is_empty() {
-            if let Some(last_op) = self.operations.last() {
-                self.operations.push(*last_op);
-            }
+        if self.selected.is_none()
+            && let Some(last_op) = self.operations.last()
+        {
+            self.operations.push(*last_op);
         }
+
         self.push_operation();
     }
 }

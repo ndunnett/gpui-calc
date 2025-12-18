@@ -1,8 +1,8 @@
-use gpui::{div, prelude::*, rgba, App, Div, ElementId, Entity, Rems, Window};
+use gpui::{App, Div, ElementId, Entity, Rems, Window, div, prelude::*, rgba};
 
 use crate::{
     state::{Event, Operator, StateEntity},
-    ui::components::{button, icon, Button, IconType},
+    ui::components::{Button, IconType, button, icon},
 };
 
 fn col() -> Div {

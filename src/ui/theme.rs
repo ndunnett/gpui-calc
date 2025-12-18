@@ -1,4 +1,4 @@
-use gpui::{rgba, Global, Rgba};
+use gpui::{Global, Rgba, rgba};
 
 pub struct Colors {
     pub bg_window: Rgba,

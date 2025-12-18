@@ -1,4 +1,4 @@
-use gpui::{div, prelude::*, px, Div, Rgba, Window};
+use gpui::{Div, Rgba, Window, div, prelude::*, px};
 
 use crate::ui::{Theme, Titlebar};
 

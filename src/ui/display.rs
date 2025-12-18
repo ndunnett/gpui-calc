@@ -1,4 +1,4 @@
-use gpui::{div, font, prelude::*, px, rems, App, Entity, FontWeight, Window};
+use gpui::{App, Entity, FontWeight, Window, div, font, prelude::*, px, rems};
 
 use crate::{state::StateEntity, ui::Theme};
 

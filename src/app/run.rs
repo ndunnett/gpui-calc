@@ -1,10 +1,10 @@
 use gpui::{
-    px, App, Application, Bounds, Pixels, Size, TitlebarOptions, WindowBackgroundAppearance,
-    WindowBounds, WindowKind, WindowOptions,
+    App, Application, Bounds, Pixels, Size, TitlebarOptions, WindowBackgroundAppearance,
+    WindowBounds, WindowKind, WindowOptions, px,
 };
 
 use crate::{
-    app::{set_keybinds, Assets},
+    app::{Assets, set_keybinds},
     state::StateEntity,
     ui::{Root, Theme},
 };
