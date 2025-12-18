@@ -5,7 +5,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-gpui = { git = "https://github.com/zed-industries/zed", rev = "f9b69aeff0f043810b7b98c6242663db76611341" }
+gpui = { git = "https://github.com/gpui-ce/gpui-ce", rev = "4b4032c17e9bf40011c4941a636293f0134a91a4" }
 anyhow = "1.0.100"
 rust-embed = { version = "8.9.0", features = ["include-exclude"] }
 
