@@ -8,8 +8,8 @@ edition = "2024"
 # latest commit of GPUI has dependency conflicts
 # https://github.com/zed-industries/zed/issues/27288
 gpui = { git = "https://github.com/zed-industries/zed", rev = "04d65cb3cd05c9ec8870288c65182cf096c68ee4" }
-anyhow = "1.0.97"
-rust-embed = { version = "8.6.0", features = ["include-exclude"] }
+anyhow = "1.0.100"
+rust-embed = { version = "8.9.0", features = ["include-exclude"] }
 
 [[bin]]
 name = "gpui-calc"
