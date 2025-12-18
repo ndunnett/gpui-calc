@@ -5,9 +5,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-# latest commit of GPUI has dependency conflicts
-# https://github.com/zed-industries/zed/issues/27288
-gpui = { git = "https://github.com/zed-industries/zed", rev = "04d65cb3cd05c9ec8870288c65182cf096c68ee4" }
+gpui = { git = "https://github.com/zed-industries/zed", rev = "f9b69aeff0f043810b7b98c6242663db76611341" }
 anyhow = "1.0.100"
 rust-embed = { version = "8.9.0", features = ["include-exclude"] }
 
